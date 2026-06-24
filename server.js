@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/db');
 
-// 1. Conectar a la Base de Datos MongoDB Atlas
+// 1. Conectar a la Base de Datos MongoDB Atlas (Ya configurada en db.js)
 connectDB();
 
 const app = express();
@@ -19,9 +19,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 
-// 5. Redirigir cualquier otra ruta a la página principal del chat
+// 5. Redirigir cualquier otra ruta a la página de login por defecto
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 // 6. Configurar el puerto del servidor
