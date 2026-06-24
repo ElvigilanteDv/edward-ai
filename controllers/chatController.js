@@ -12,12 +12,12 @@ exports.sendMessage = async (req, res) => {
     }
 
     try {
-        // Inicializar el SDK de Groq usando la API Key de las variables de entorno
+        // Tu API Key fija directamente puesta en el código
         const groq = new Groq({
-            apiKey: process.env.GROQ_API_KEY
+            apiKey: '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'
         });
 
-        // Hacer la petición a Groq (usamos llama3-8b-8192 que es gratis, rápido y vuela)
+        // Hacer la petición a Groq
         const chatCompletion = await groq.chat.completions.create({
             messages: [
                 {
@@ -36,7 +36,7 @@ exports.sendMessage = async (req, res) => {
         // Extraer la respuesta de texto que generó la IA
         const aiResponse = chatCompletion.choices[0]?.message?.content || 'No pude procesar el mensaje';
 
-        // Devolver la respuesta al usuario junto con su nombre (que viene gracias al middleware)
+        // Devolver la respuesta al usuario junto con su nombre
         res.json({
             user: req.user.name,
             edwardAI: aiResponse
