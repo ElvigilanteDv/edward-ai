@@ -1,10 +1,10 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Función auxiliar para generar los tokens de sesión (JWT)
+// Función interna para generar el token de sesión con clave fija
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '30d' // El token dura 30 días activado
+    return jwt.sign({ id }, 'EdwardAI_ClaveSecreta_12345', {
+        expiresIn: '30d', // La sesión dura 30 días activa
     });
 };
 
@@ -14,25 +14,19 @@ exports.registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
-        // 1. Revisar si el usuario ya existe en la base de datos
         const userExists = await User.findOne({ email });
         if (userExists) {
-            return res.status(400).json({ message: 'El usuario ya existe con ese correo' });
+            return res.status(400).json({ message: 'El usuario ya existe' });
         }
 
-        // 2. Crear el nuevo usuario si todo está bien
-        const user = await User.create({
-            name,
-            email,
-            password
-        });
+        const user = await User.create({ name, email, password });
 
         if (user) {
             res.status(201).json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                token: generateToken(user._id) // Le mandamos su llave de entrada
+                token: generateToken(user._id),
             });
         } else {
             res.status(400).json({ message: 'Datos de usuario inválidos' });
@@ -48,16 +42,14 @@ exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // 1. Buscar si el usuario existe por correo
         const user = await User.findOne({ email });
 
-        // 2. Si existe, comparar si la contraseña coincide usando el método de nuestro Modelo
         if (user && (await user.matchPassword(password))) {
             res.json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                token: generateToken(user._id) // Iniciamos su sesión
+                token: generateToken(user._id),
             });
         } else {
             res.status(401).json({ message: 'Correo o contraseña incorrectos' });
